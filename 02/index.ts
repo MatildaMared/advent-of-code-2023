@@ -1,65 +1,27 @@
-import * as fs from "fs";
-import * as path from "path";
+import {
+	MAX_NUMBER_OF_BLUE,
+	MAX_NUMBER_OF_GREEN,
+	MAX_NUMBER_OF_RED,
+	getFormattedGameData,
+} from "./utils";
 
-// 🎄 🎅 Advent of Code 2023 Day 1 🎅 🎄
-const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8");
-const lines = input.split("\n");
+// 🎄 🎅 Advent of Code 2023 Day 2 🎅 🎄
 
-interface GameData {
-	games: Game[];
-}
+// 🍬 🍭 Part 1 🍭 🍬
 
-interface Game {
-	blue: number;
-	red: number;
-	green: number;
-}
-
-const games = new Map<number, GameData>();
-
-lines.forEach((line) => {
-	const [title, data] = line.split(":");
-	const gameId = parseInt(title.split(" ")[1]);
-	const dataForOneGame = data.split(";");
-	const gamesData: Game[] = [];
-
-	dataForOneGame.forEach((data) => {
-		const colors = data.split(", ");
-
-		const gameData: Game = {
-			blue: 0,
-			red: 0,
-			green: 0,
-		};
-
-		colors.forEach((color) => {
-			const [amount, colorValue] = color.trim().split(" ");
-			gameData[colorValue as keyof Game] = parseInt(amount.trim());
-		});
-
-		gamesData.push(gameData);
-	});
-
-	games.set(gameId, {
-		games: gamesData,
-	});
-});
-
-const maxNumberOfRed = 12;
-const maxNumberOfGreen = 13;
-const maxNumberOfBlue = 14;
+const gamesData = getFormattedGameData();
 
 const gameIdsThatArePossible: Set<number> = new Set();
 
-games.forEach((gameData, gameId) => {
+gamesData.forEach((gameData, gameId) => {
 	const games = gameData.games;
 	let gameIsPossible = true;
 
 	games.forEach((game) => {
 		if (
-			game.red > maxNumberOfRed ||
-			game.green > maxNumberOfGreen ||
-			game.blue > maxNumberOfBlue
+			game.red > MAX_NUMBER_OF_RED ||
+			game.green > MAX_NUMBER_OF_GREEN ||
+			game.blue > MAX_NUMBER_OF_BLUE
 		) {
 			gameIsPossible = false;
 		}
@@ -70,24 +32,18 @@ games.forEach((gameData, gameId) => {
 	}
 });
 
-console.log(gameIdsThatArePossible);
-
 const sumOfAllPossibleGameIds = Array.from(gameIdsThatArePossible).reduce(
 	(acc, curr) => acc + curr,
 	0
 );
 
-console.log(sumOfAllPossibleGameIds);
-
-// 🍬 🍭 Part 1 🍭 🍬
-
-console.log(sumOfAllPossibleGameIds);
+console.log(`🎄 🎅 The answer to part 1 is: ${sumOfAllPossibleGameIds} 🍬 🍭`);
 
 // 🍬 🍭 Part 2 🍭 🍬
 
 const powersOfTheSets: number[] = [];
 
-games.forEach((gameData, gameId) => {
+gamesData.forEach((gameData) => {
 	const games = gameData.games;
 	let fewestRedPossible = 0;
 	let fewestGreenPossible = 0;
@@ -104,20 +60,12 @@ games.forEach((gameData, gameId) => {
 			fewestBluePossible = game.blue;
 		}
 	});
-	console.log(
-		"red: ",
-		fewestRedPossible,
-		"green: ",
-		fewestGreenPossible,
-		"blue: ",
-		fewestBluePossible
-	);
 
-	powersOfTheSets.push(fewestRedPossible * fewestGreenPossible * fewestBluePossible);
+	powersOfTheSets.push(
+		fewestRedPossible * fewestGreenPossible * fewestBluePossible
+	);
 });
 
-const totalPowersOfTheSets = powersOfTheSets.reduce(
-	(acc, curr) => acc + curr,
-	0
-);
-console.log(totalPowersOfTheSets);
+const sumOfAllPowers = powersOfTheSets.reduce((acc, curr) => acc + curr, 0);
+
+console.log(`🎄 🎅 The answer to part 2 is: ${sumOfAllPowers} 🍬 🍭`);
