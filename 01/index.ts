@@ -1,62 +1,63 @@
 import * as fs from "fs";
 import * as path from "path";
+import { NUMBERS } from "./utils";
 
 // 🎄 🎅 Advent of Code 2023 Day 1 🎅 🎄
 const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8");
 const lines = input.split("\n");
 
 // 🍬 🍭 Part 1 🍭 🍬
-let firstAnswer = 0;
+
+let sumOfAllCalibrationValues = 0;
+
 lines.forEach((line) => {
-	const split = line.split("");
-	const numbers = split
+	const numbers = line
+		.split("")
 		.map((char) => parseInt(char))
 		.filter((num) => !isNaN(num));
 	const sum = numbers[0].toString() + numbers[numbers.length - 1].toString();
-	firstAnswer += parseInt(sum);
+	sumOfAllCalibrationValues += parseInt(sum);
 });
-console.log(`The answer to part 1 is: ${firstAnswer} 🍬 🍭`);
+
+console.log(
+	`🎄 🎅 The answer to part 1 is: ${sumOfAllCalibrationValues} 🍬 🍭`
+);
 
 // 🍬 🍭 Part 2 🍭 🍬
-const numbers = [
-	"one",
-	"two",
-	"three",
-	"four",
-	"five",
-	"six",
-	"seven",
-	"eight",
-	"nine",
-];
 
-const numbers2: number[][] = [];
-lines.forEach((line, index) => {
+sumOfAllCalibrationValues = 0;
+
+const allDigits: number[][] = [];
+
+lines.forEach((line) => {
 	let rowNumbers: number[] = [];
-	const characters = line.split("");
 	let currentSequence = "";
-	characters.forEach((character) => {
+
+	line.split("").forEach((character) => {
 		// if it is a number
 		if (!isNaN(parseInt(character))) {
 			rowNumbers.push(parseInt(character));
 		} else {
 			currentSequence += character;
 			// does the current sequence match a number in the numbers array?
-			numbers.forEach((number) => {
+			NUMBERS.forEach((number) => {
 				if (currentSequence.includes(number)) {
-					rowNumbers.push(numbers.indexOf(number) + 1);
+					rowNumbers.push(NUMBERS.indexOf(number) + 1);
+					// reset the current sequence but keep the last characters since it could be the start of a new number
 					currentSequence = currentSequence[currentSequence.length - 1];
 				}
 			});
 		}
 	});
-	numbers2.push(rowNumbers);
+	allDigits.push(rowNumbers);
 });
 
-let secondAnswer = 0;
-
-numbers2.forEach((row) => {
-	const rowResult = row[0].toString() + row[row.length - 1].toString();
-	secondAnswer += parseInt(rowResult);
+allDigits.forEach((rowOfDigits) => {
+	const rowResult =
+		rowOfDigits[0].toString() + rowOfDigits[rowOfDigits.length - 1].toString();
+	sumOfAllCalibrationValues += parseInt(rowResult);
 });
-console.log(`The answer to part 2 is: ${secondAnswer} 🍬 🍭`);
+
+console.log(
+	`🎄 🎅 The answer to part 2 is: ${sumOfAllCalibrationValues} 🍬 🍭`
+);
