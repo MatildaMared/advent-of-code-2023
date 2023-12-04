@@ -5,7 +5,7 @@ import * as path from "path";
 const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8");
 const cards = input.split("\n").filter((n) => n);
 
-const totalScratchCards = cards.map((card) => 1);
+const totalScratchCards = cards.map(() => 1);
 
 // // 🍬 🍭 Part 1 🍭 🍬
 
