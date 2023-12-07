@@ -1,12 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
+import { CardHand, HandType } from "./utils";
+
+console.time("Time");
 
 // 🎄 🎅 Advent of Code 2023 Day 7 🎅 🎄
 
 const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8");
 const line = input.split("\n");
 
-// 🍬 🍭 Part 1 🍭 🍬
+// 🍬 🍭 Part 2 🍭 🍬
 
 const hands: CardHand[] = [];
 
@@ -44,65 +47,55 @@ const totalWinnings = hands.reduce((acc, hand) => {
 	return acc + hand.bid * hand.rank;
 }, 0);
 
-console.log(hands);
+console.log(`🎄 🎅 The answer to part 2 is: ${totalWinnings} 🍬 🍭`);
 
-console.log(`🎄 🎅 The answer to part 1 is: ${totalWinnings} 🍬 🍭`);
-
-// 🍬 🍭 Part 2 🍭 🍬
-
-console.log(`🎄 🎅 The answer to part 2 is: ${undefined} 🍬 🍭`);
-
-interface CardHand {
-	cards: string[];
-	type?: HandType;
-	typeNumber: number;
-	rank?: number;
-	bid: number;
-}
-type HandType =
-	| "FIVE_OF_A_KIND"
-	| "FOUR_OF_A_KIND"
-	| "FULL_HOUSE"
-	| "THREE_OF_A_KIND"
-	| "TWO_PAIR"
-	| "ONE_PAIR"
-	| "HIGH_CARD";
+console.timeEnd("Time");
 
 function getCardTypeNumber(hand: CardHand): number {
 	switch (hand.type) {
 		case "FIVE_OF_A_KIND":
-			return 7;
+			return 8;
 		case "FOUR_OF_A_KIND":
-			return 6;
+			return 7;
 		case "FULL_HOUSE":
-			return 5;
+			return 6;
 		case "THREE_OF_A_KIND":
-			return 4;
+			return 5;
 		case "TWO_PAIR":
-			return 3;
+			return 4;
 		case "ONE_PAIR":
-			return 2;
+			return 3;
 		case "HIGH_CARD":
-			return 1;
+			return 2;
 		default:
-			return 0;
+			return 1;
 	}
+}
+
+function numberOfJokers(cards: string[]): number {
+	return cards.filter((card) => card === "J").length;
 }
 
 function getCardType(hand: CardHand): HandType {
 	const counts = getCounts(hand.cards);
+	let jokers = numberOfJokers(hand.cards);
+	console.log("Counts: ", counts, ", Jokers: ", jokers);
 
-	if (counts[0].amount === 5) {
+	const most = counts[0]?.amount ? counts[0]?.amount + jokers : jokers;
+	const secondMost =
+		counts[0]?.amount && counts[1]?.amount ? counts[1]?.amount : 0;
+
+	if (most >= 5) {
 		return "FIVE_OF_A_KIND";
-	} else if (counts[0].amount === 4) {
+	} else if (most === 4) {
 		return "FOUR_OF_A_KIND";
-	} else if (counts[0].amount === 3 && counts[1].amount === 2) {
+	} else if (most === 3 && secondMost === 2) {
 		return "FULL_HOUSE";
-	} else if (counts[0].amount === 3) {
+	} else if (most === 3) {
 		return "THREE_OF_A_KIND";
-	} else if (counts[0].amount === 2 && counts[1].amount === 2) {
+	} else if (most === 2 && secondMost === 2) {
 		return "TWO_PAIR";
-	} else if (counts[0].amount === 2) {
+	} else if (most === 2) {
 		return "ONE_PAIR";
 	} else {
 		return "HIGH_CARD";
@@ -118,6 +111,9 @@ function getCounts(cards: string[]): CardCount[] {
 	const counts: CardCount[] = [];
 	for (let i = 0; i < cards.length; i++) {
 		const card = cards[i];
+		if (card === "J") {
+			continue;
+		}
 		const count = counts.find((c) => c.type === card);
 		if (count) {
 			count.amount++;
@@ -130,44 +126,37 @@ function getCounts(cards: string[]): CardCount[] {
 }
 
 function findOutOrder(a: CardHand, b: CardHand) {
-	if (a.typeNumber !== b.typeNumber) {
-		if (a.typeNumber > b.typeNumber) {
-			console.log(a, " comes before ", b);
-			return 1;
-		} else if (b.typeNumber > a.typeNumber) {
-			console.log(a, " comes after ", b);
-			return -1;
-		}
+	if (a.typeNumber > b.typeNumber) {
+		return 1;
+	}
+	if (a.typeNumber < b.typeNumber) {
+		return -1;
 	}
 	for (let i = 0; i < a.cards.length; i++) {
 		const aCardScore = getCardScore(a.cards[i]);
 		const bCardScore = getCardScore(b.cards[i]);
 		if (aCardScore !== bCardScore) {
-			if (aCardScore > bCardScore) {
-				console.log(a, " comes before ", b);
-				return 1;
-			} else if (bCardScore > aCardScore) {
-				console.log(a, " comes after ", b);
-				return -1;
-			}
+			return aCardScore > bCardScore ? 1 : -1;
+		} else {
+			continue;
 		}
 	}
 
-	return 1;
+	return 0;
 }
 
 function getCardScore(card: string): number {
 	switch (card) {
 		case "A":
-			return 14;
-		case "K":
 			return 13;
-		case "Q":
+		case "K":
 			return 12;
-		case "J":
+		case "Q":
 			return 11;
 		case "T":
 			return 10;
+		case "J":
+			return 1;
 		default:
 			return Number(card);
 	}
