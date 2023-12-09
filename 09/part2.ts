@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { findNextValue, getSequences } from "./utils";
+import { findFirstValue, getSequences } from "./utils";
 
 // 🎄 🎅 Advent of Code 2023 Day 9 🎅 🎄
 
@@ -11,16 +11,16 @@ const histories = input
 	.filter((line) => line.length > 1)
 	.map((line) => line.map((number) => Number(number)));
 
-// 🍬 🍭 Part 1 🍭 🍬
+// 🍬 🍭 Part 2 🍭 🍬
 
-const nextValues: number[] = [];
+const firstValues: number[] = [];
 
 histories.forEach((history) => {
 	const sequences = getSequences(history);
-	const nextValue = findNextValue(sequences);
-	nextValues.push(nextValue);
+	const firstValue = findFirstValue(sequences);
+	firstValues.push(firstValue);
 });
 
-const result = nextValues.reduce((sum, value) => sum + value, 0);
+const result = firstValues.reduce((sum, value) => sum + value, 0);
 
-console.log(`🎄 🎅 The answer to part 1 is: ${result} 🍬 🍭`);
+console.log(`🎄 🎅 The answer to part 2 is: ${result} 🍬 🍭`);
