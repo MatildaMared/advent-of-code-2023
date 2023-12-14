@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-// 🎄 🎅 Advent of Code 2023 Day 13 🎅 🎄
+// 🎄 🎅 Advent of Code 2023 Day 14 🎅 🎄
 
 // 🍬 🍭 Part 1 🍭 🍬
 
